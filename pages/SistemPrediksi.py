@@ -477,12 +477,15 @@ currency = st.sidebar.radio("Pilih satu yang ingin dilihat prediksinya",["USD/ID
 
 st.sidebar.markdown("")
 st.sidebar.markdown("### Tanggal Penutupan Terakhir")
-if currency == 'USD/IDR':
-    st.sidebar.write(combine_usd().index[-1].date())
-if currency == 'EUR/IDR':
-    st.sidebar.write(combine_eur().index[-1].date())
-if currency == 'GBP/IDR':
-    st.sidebar.write(combine_gbp().index[-1].date())
+
+df_map = {
+    'USD/IDR': combine_usd,
+    'EUR/IDR': combine_eur,
+    'GBP/IDR': combine_gbp
+}
+
+last_date = df_map[currency]().index[-1]
+st.sidebar.write(last_date.strftime('%d-%m-%Y'))
 
 st.sidebar.markdown("")
 st.sidebar.markdown("### Pilih Rentang Prediksi")
@@ -595,11 +598,12 @@ def arimax_1_horizon(df, exog, p,d,q, step,currency):
     upper = conf_int.iloc[:, 1]
     
     last_date = df.index[-1]
-    future_dates = pd.date_range(start=df.index[-1] + timedelta(days=1),
-                            periods=step, freq='B')
+    future_dates = pd.date_range(
+        start=df.index[-1] + timedelta(days=1), periods=step,
+        freq='B'
+    )
     
     forecast = np.array(forecast).flatten()
-
     forecast_df = pd.DataFrame({
         "Date": future_dates,
         "Forecast": mean_forecast,
@@ -609,6 +613,7 @@ def arimax_1_horizon(df, exog, p,d,q, step,currency):
     
     last_price = df['Close Price'].iloc[-1]
     next_price = forecast[-1]
+
     expected_return = ((next_price - last_price) / last_price) * 100
     
     st.header(f"1️⃣ Prediksi Close Price {currency}")
@@ -625,14 +630,14 @@ def arimax_1_horizon(df, exog, p,d,q, step,currency):
     with col1:
         st.markdown("##### Harga Hari Ini")
         st.metric(
-            label=f"{last_date.date()}",
+            label=last_date.strftime('%d-%m-%Y'),
             value=f"Rp {last_price:,.2f}"
         )
 
     with col2:
         st.markdown("##### Hasil Prediksi")
         st.metric(
-            label=f"H+1 ({future_dates[0].date()})",
+            label=f"H+1 ({future_dates[0].strftime('%d-%m-%Y')})",
             value=f"Rp {next_price:,.2f}",
             delta=f"Perubahan: Rp.{perubahan_prediksi:,.2f} ({perubahan_persen:,.2f}%)",
             delta_color="normal" if perubahan_prediksi >= 0 else "inverse"
@@ -727,14 +732,14 @@ def arimaxgarchx_1_horizon(df, exog, p_vol, d_vol, q_vol, p_gar, q_gar, step, cu
     with col1:
         st.markdown("##### Volatilitas Harian Terakhir")
         st.metric(
-            label=f"{last_date.date()}",
+            label=f"{last_date.strftime('%d-%m-%Y')}",
             value=f"Rp {last_vol:,.5f}"
         )
 
     with col2:
         st.markdown("##### Hasil Prediksi")
         st.metric(
-            label=f"H+1 ({future_dates[0].date()})",
+            label=f"H+1 ({future_dates[0].strftime('%d-%m-%Y')})",
             value=f"Rp {vol[-1]:,.5f}",
             delta=f"Perubahan: {percentage_diff:,.2f}%",
             delta_color="normal" if diff >= 0 else "inverse"
