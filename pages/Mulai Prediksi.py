@@ -491,6 +491,7 @@ currency = st.sidebar.radio("Pilih satu yang ingin dilihat prediksinya",["USD/ID
 
 st.sidebar.markdown("")
 st.sidebar.markdown("### Tanggal Penutupan Terakhir")
+st.sidebar.markdown("###### Tanggal yang tertera berdasarkan data terakhir Investing.com")
 
 df_map = {
     'USD/IDR': combine_usd,
