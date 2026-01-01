@@ -508,15 +508,15 @@ st.sidebar.markdown("###### 1 hari ke depan (business day)")
 # range_option = st.sidebar.radio("Rentang prediksi ke depan (business day)", ["1 hari ke depan", "5 hari ke depan"])
 
 if currency == "USD/IDR":
-    p = 2
+    step = 1
+    p = 1
     d = 1
-    q = 2
+    q = 1
     p_vol = 0
     d_vol = 0
     q_vol = 2
     p_gar = 1
     q_gar = 1
-    step = 1
     df = combine_usd()
     choice = 1
     
@@ -536,9 +536,9 @@ elif currency == "EUR/IDR":
 elif currency == "GBP/IDR":
     step = 1
     window = 30
-    p = 1
+    p = 0
     d = 1
-    q = 1
+    q = 5
     p_vol = 0
     d_vol = 0
     q_vol = 1
