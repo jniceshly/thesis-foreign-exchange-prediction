@@ -21,4 +21,4 @@ st.write("Klik tombol **Prediksi** untuk memulai analisis")
 st.divider()
 
 # Info box untuk hasil
-st.info("📊 **Hasil Prediksi** — Nilai penutupan dan volatilitas akan ditampilkan pada halaman utama Gree setelah proses selesai.")
+st.info("📊 **Hasil Prediksi** — Nilai penutupan akan ditampilkan pada halaman utama Gree setelah proses selesai.")

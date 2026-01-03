@@ -8,7 +8,7 @@ st.set_page_config(
 
 st.markdown(
     """
-    <h1 style='text-align: left;'>💱 Gree: Sistem Prediksi Harga Penutupan & Volatilitas Valuta Asing</h1>
+    <h1 style='text-align: left;'>💱 Gree: Sistem Prediksi Harga Penutupan Valuta Asing</h1>
     """,
     unsafe_allow_html=True
 )
@@ -23,7 +23,7 @@ st.markdown(
 
     Gree adalah sebuah sistem prediksi yang dirancang untuk memberikan
     **informasi prediktif** mengenai 
-    **harga penutupan** dan **volatilitas nilai tukar valuta asing terhadap Rupiah (IDR)**.
+    **harga penutupan nilai tukar valuta asing terhadap Rupiah (IDR)**.
     
     Nilai tukar yang dapat diprediksi dengan Gree adalah 3 nilai tukar
     yang sering dijadikan sarana investasi oleh masyarakat Indonesia (sumber: *https://www.dbs.id/*). Nilai tukar tersebut yaitu:
@@ -47,12 +47,12 @@ st.markdown("""
     Prediksi dapat dilakukan untuk 1 hari ke depan (hari kerja).
 """)
 
-st.markdown("##### 📊 Prediksi Volatilitas")
-st.markdown("""
-    Selain harga penutupan, Gree juga mampu memprediksi volatilitas
-    nilai tukar USD/IDR, EUR/IDR, dan GBP/IDR, yang merepresentasikan tingkat fluktuasi
-    harga. Prediksi volatilitas dilakukan untuk 1 hari ke depan (hari kerja).
-    """)
+# st.markdown("##### 📊 Prediksi Volatilitas")
+# st.markdown("""
+#     Selain harga penutupan, Gree juga mampu memprediksi volatilitas
+#     nilai tukar USD/IDR, EUR/IDR, dan GBP/IDR, yang merepresentasikan tingkat fluktuasi
+#     harga. Prediksi volatilitas dilakukan untuk 1 hari ke depan (hari kerja).
+#     """)
 
 st.write("")
 st.write("")
@@ -102,14 +102,14 @@ st.markdown(
     """
 )
 
-st.markdown("##### 📊 ARIMAX-GARCHX")
-st.markdown(
-    """
-    Autoregressive Integrated Moving Average with Exogenous Variable (ARIMAX)
-    dan Generalized Autoregressive Conditional Heteroskedasticity with Exogenous Variable (GARCHX)
-    digunakan untuk memprediksi volatilitas valuta asing.
-    """
-)
+# st.markdown("##### 📊 ARIMAX-GARCHX")
+# st.markdown(
+#     """
+#     Autoregressive Integrated Moving Average with Exogenous Variable (ARIMAX)
+#     dan Generalized Autoregressive Conditional Heteroskedasticity with Exogenous Variable (GARCHX)
+#     digunakan untuk memprediksi volatilitas valuta asing.
+#     """
+# )
 
 
 st.divider()

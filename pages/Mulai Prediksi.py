@@ -644,8 +644,8 @@ def arimax_1_horizon(df, exog, p,d,q, step,currency):
     else:
         st.markdown("**Sinyal:** 🔴 Harga penutupan lebih tinggi hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih rendah.")
     
-    st.divider()
-    st.write(" ")    
+    # st.divider()
+    # st.write(" ")
 
 
 def arimaxgarchx_1_horizon(df, exog, p_vol, d_vol, q_vol, p_gar, q_gar, step, currency):
@@ -695,56 +695,56 @@ def arimaxgarchx_1_horizon(df, exog, p_vol, d_vol, q_vol, p_gar, q_gar, step, cu
         "Lower CI": lower_vol
     })
 
-    st.header(f"2️⃣ Prediksi Volatilitas {currency}")
-    st.write("")
+    # st.header(f"2️⃣ Prediksi Volatilitas {currency}")
+    # st.write("")
     
-    df["hist_vol_daily"] = df["price_diff"].rolling(22).std()
-    last_vol = df["hist_vol_daily"].iloc[-1]
+    # df["hist_vol_daily"] = df["price_diff"].rolling(22).std()
+    # last_vol = df["hist_vol_daily"].iloc[-1]
 
-    diff = result['Vol Forecast'].values[0] - last_vol
-    percentage_diff = (diff / last_vol)*100
+    # diff = result['Vol Forecast'].values[0] - last_vol
+    # percentage_diff = (diff / last_vol)*100
 
-    col1, col2, col3, col4 = st.columns(4)
+    # col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        st.markdown("##### Volatilitas Harian Terakhir")
-        st.metric(
-            label=f"{last_date.strftime('%d-%m-%Y')}",
-            value=f"Rp {last_vol:,.5f}"
-        )
+    # with col1:
+    #     st.markdown("##### Volatilitas Harian Terakhir")
+    #     st.metric(
+    #         label=f"{last_date.strftime('%d-%m-%Y')}",
+    #         value=f"Rp {last_vol:,.5f}"
+    #     )
 
-    with col2:
-        st.markdown("##### Hasil Prediksi")
-        st.metric(
-            label=f"H+1 ({future_dates[0].strftime('%d-%m-%Y')})",
-            value=f"Rp {vol[-1]:,.5f}",
-            delta=f"Perubahan: {percentage_diff:,.2f}%",
-            delta_color="normal" if diff >= 0 else "inverse"
-        )
+    # with col2:
+    #     st.markdown("##### Hasil Prediksi")
+    #     st.metric(
+    #         label=f"H+1 ({future_dates[0].strftime('%d-%m-%Y')})",
+    #         value=f"Rp {vol[-1]:,.5f}",
+    #         delta=f"Perubahan: {percentage_diff:,.2f}%",
+    #         delta_color="normal" if diff >= 0 else "inverse"
+    #     )
     
-    with col3:
-        st.markdown("##### Batas Atas")
-        st.metric(
-            label="Tingkat kepercayaan: 95%",
-            value=f"Rp {upper_vol[0]:,.5f}"
-        )
-    with col4:
-        st.markdown("##### Batas Bawah")
-        st.metric(
-            label="Tingkat kepercayaan: 95%",
-            value=f"Rp {lower_vol[0]:,.5f}"
-        )
+    # with col3:
+    #     st.markdown("##### Batas Atas")
+    #     st.metric(
+    #         label="Tingkat kepercayaan: 95%",
+    #         value=f"Rp {upper_vol[0]:,.5f}"
+    #     )
+    # with col4:
+    #     st.markdown("##### Batas Bawah")
+    #     st.metric(
+    #         label="Tingkat kepercayaan: 95%",
+    #         value=f"Rp {lower_vol[0]:,.5f}"
+    #     )
         
-    st.write("")
-    info_ci_vol()
+    # st.write("")
+    # info_ci_vol()
         
-    fig = plot_volatility(df, result, future_dates)
-    st.plotly_chart(fig, use_container_width=True)
+    # fig = plot_volatility(df, result, future_dates)
+    # st.plotly_chart(fig, use_container_width=True)
 
-    if vol < last_vol:
-        st.markdown("**Sinyal:** 🟢 Volatilitas lebih tinggi hari ini dibandingkan hasil prediksi, potensi resiko diprediksikan menurun")
-    else:
-        st.markdown("**Sinyal:** 🔴 Volatilitas lebih rendah hari ini dibandingkan hasil prediksi, potensi resiko diprediksikan meningkat")
+    # if vol < last_vol:
+    #     st.markdown("**Sinyal:** 🟢 Volatilitas lebih tinggi hari ini dibandingkan hasil prediksi, potensi resiko diprediksikan menurun")
+    # else:
+    #     st.markdown("**Sinyal:** 🔴 Volatilitas lebih rendah hari ini dibandingkan hasil prediksi, potensi resiko diprediksikan meningkat")
 
     
 def arimax_5_horizon(df, exog, p,d,q, step,currency):
@@ -918,9 +918,9 @@ def arimax_5_horizon(df, exog, p,d,q, step,currency):
     else:
         st.markdown("**Sinyal:** 🔴 Harga penutupan lebih tinggi hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih rendah.")
     
-    st.write("---")
-    st.write(" ")
-    st.write(" ")
+    # st.write("---")
+    # st.write(" ")
+    # st.write(" ")
 
 
 def arimax_5_horizon_vol(df, exog, p_vol, d_vol, q_vol, p_gar, q_gar, step,currency):
