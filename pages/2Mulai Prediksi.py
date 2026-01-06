@@ -2,29 +2,24 @@ import sys
 import os
 import io
 import streamlit as st
-# from streamlit_gsheets import GSheetsConnection
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-st.set_page_config(layout="wide")
-
 try:
     from arch import arch_model
     import numba
 except Exception as e:
     print(f"Import error: {e}")
-    
 import pandas as pd
-import numpy
 import numpy as np
 import pickle as pkl
-import plotly.graph_objects as go
 import plotly.express as px
+import plotly.graph_objects as go
 from sklearn.preprocessing import MinMaxScaler
-import datetime
 from datetime import date, timedelta
 import joblib
-
 import holidays
 from pandas.tseries.offsets import CustomBusinessDay
+
+st.set_page_config(layout="wide")
 
 if 'predicted' not in st.session_state:
     st.session_state.predicted = False
@@ -66,7 +61,7 @@ month_map = {
     'Oktober': 'October', 'November': 'November', 'Desember': 'December'
 }
 
-######### LOAD DATA
+### LOAD DATA
 def load_usd():
     df = pd.read_excel("USD_IDR_Investing.xlsx")
     df = df.drop(0, axis=0)
@@ -145,7 +140,6 @@ def exog_birate():
     interest_daily = interest_daily.ffill()
 
     return interest_daily
-#st.dataframe(exog_birate())
 
 def exog_inflasi():
     inflasi = pd.read_excel('Data Inflasi.xlsx')
@@ -168,20 +162,6 @@ def exog_inflasi():
     
     inflation_daily = (inflasi.reindex(pd.date_range(inflasi.index.min(), end_month, freq="D")).ffill())
     return inflation_daily
-"""
-def exog_devisa():
-    cad_devisa = pd.read_excel("Cadangan Devisa-BI.xlsx")
-    cad_devisa = cad_devisa.set_index(cad_devisa['Tanggal'])
-    cad_devisa = cad_devisa.drop('Tanggal', axis=1)
-    cad_devisa.index = cad_devisa.index.to_period('M').to_timestamp()
-    cad_devisa = cad_devisa.rename(columns={'Cadangan Devisa (konsep IRFCL) 4) dalam USD':'Cadangan Devisa'})
-    last_date = cad_devisa.index.max()
-    end_month = last_date.to_period('M').to_timestamp('M')
-    
-    devisa_daily = (cad_devisa.reindex(pd.date_range(cad_devisa.index.min(), end_month, freq="D")).ffill())
-    return devisa_daily
-#st.dataframe(exog_devisa())
-"""
 
 def merge_exog():
     inflasi = exog_inflasi()
@@ -201,14 +181,9 @@ def load_sheet(gid):
         f"?format=csv&gid={gid}"
     )
 
-    df = pd.read_csv(
-        url,
-        header=0,          # paksa header
-        usecols=[0, 1],    # cuma 2 kolom
-        skip_blank_lines=True
-    )
+    df = pd.read_csv(url, header=0, usecols=[0, 1], skip_blank_lines=True)
 
-    df = df.dropna()      # buang baris kosong
+    df = df.dropna() # drop baris kosong
     df = df.reset_index(drop=True)
 
     return df
@@ -217,7 +192,6 @@ df_new_usd = load_sheet(gid="0")
 df_new_eur = load_sheet(gid="753250280")
 df_new_gbp = load_sheet(gid="1222767202")
 df_new_inflasi = load_sheet(gid="1835176075")
-df_new_caddev = load_sheet(gid="453134674")
 df_new_birate = load_sheet(gid="2095066760")
 
 def load_usd_latest():
@@ -298,7 +272,6 @@ def exog_inflasi_latest():
     df_inf = df_inf.dropna(subset=["Date"])
     df_inf["Inflasi"] = (df_inf["Inflasi"].str.replace('%','',regex=False).astype(float))
     df_inf = df_inf.set_index("Date").sort_index()
-
     df_inf_daily = (df_inf.reindex(pd.date_range(df_inf.index.min(), pd.Timestamp.today().normalize(), freq="D")).ffill())
 
     return df_inf_daily
@@ -313,18 +286,6 @@ def exog_birate_latest():
     df_rate_daily = (df_rate.reindex(pd.date_range(df_rate.index.min(), pd.Timestamp.today().normalize(), freq="D")).ffill())
 
     return df_rate_daily
-
-def exog_devisa_latest():
-    df_dev = df_new_caddev.copy()
-    df_dev.columns = ["Date", "Cadangan Devisa"]
-    df_dev["Date"] = pd.to_datetime(df_dev["Date"], errors="coerce")
-    df_dev = df_dev.dropna(subset=["Date"])
-    df_dev["Cadangan Devisa"] = df_dev["Cadangan Devisa"].str.replace(",",'',regex=False).astype(float)
-    df_dev = df_dev.set_index("Date").sort_index()
-
-    df_dev_daily = (df_dev.reindex(pd.date_range(df_dev.index.min(), pd.Timestamp.today().normalize(), freq="D")).ffill())
-
-    return df_dev_daily
 
 def merge_exog_latest():
     inflasi = exog_inflasi_latest()
@@ -355,7 +316,7 @@ def split_data(window_size, horizon, df):
     window_size = window_size
     horizon = horizon
 
-    data = df[['Close Price', 'Inflasi', 'BI Rate', 'Cadangan Devisa']]
+    data = df[['Close Price', 'Inflasi', 'BI Rate']]
 
     split_idx = int(len(data) * 0.8)
     train_data = data.iloc[:split_idx]
@@ -375,7 +336,7 @@ def windowing(train_data, test_data, window_size, horizon):
     X_test, y_test = create_windows(test_data, window_size, horizon)
     return X_train, y_train, X_test, y_test
 
-######### PRICE FORECASTING
+### PRICE FORECASTING
 def forecast_price(model, exog=None, steps=1):
     forecast = model.forecast(steps=steps, exog=exog)
     return forecast
@@ -482,10 +443,7 @@ future_dates = pd.date_range(
         freq=custom_bd
     )
 st.sidebar.write(future_dates[0].strftime('%d %B %Y'))
-st.sidebar.markdown("###### (Prediksi H+1 di business day)")
-
-st.write("")
-st.write("")
+st.sidebar.markdown("###### (Prediksi H+1 di Business Day)")
 
 if currency == "USD/IDR":
     step = 1
@@ -699,7 +657,6 @@ def display_comparison_table(backtest_df, currency):
 def plot_comparison(backtest_df):
     st.write("")
     st.write("")
-    st.write("")
     st.markdown("##### Visualisasi Nilai Aktual dan Hasil Prediksi")
     fig = go.Figure()
     
@@ -761,7 +718,6 @@ def plot_comparison(backtest_df):
     
     st.plotly_chart(fig, use_container_width=True)
 
-
 def calculate_macd(df, fast=12, slow=26, signal=9):
     df_macd = df.copy()
     
@@ -779,7 +735,6 @@ def calculate_macd(df, fast=12, slow=26, signal=9):
     df_macd['Histogram'] = df_macd['MACD'] - df_macd['Signal']
     
     return df_macd
-
 
 def plot_macd(df, n_days):
     end_date = df.index.max()
@@ -1036,7 +991,6 @@ def arimax_1_horizon(df, exog, p,d,q, step,currency):
     
     #st.subheader(f"Hasil Prediksi Close Price {currency}")
     #st.write("")
-    st.write("")
     
     #perubahan_prediksi = next_price - last_price
     #perubahan_persen = (perubahan_prediksi / last_price) * 100
@@ -1074,7 +1028,6 @@ def display_prediction_results(results):
         value=f"Rp {results['last_price']:,.2f}"
     )
     st.write("")
-    st.write("")
     col1, col2, col3 = st.columns(3)
 
     #with col1:
@@ -1091,13 +1044,6 @@ def display_prediction_results(results):
             delta=f"Perubahan: Rp.{results['perubahan_prediksi']:,.2f} ({results['perubahan_persen']:,.2f}%)",
             delta_color="normal" if results['perubahan_prediksi'] >= 0 else "inverse"
         )
-        st.write("")
-        st.write("")
-        if results['expected_return'] > 0:
-            st.info("**Sinyal:** 🟢 Harga penutupan lebih rendah hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih tinggi.")
-        else:
-            st.info("**Sinyal:** 🔴 Harga penutupan lebih tinggi hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih rendah.")
-    
     with col2:
         st.markdown("##### Batas Atas")
         st.metric(
@@ -1110,11 +1056,15 @@ def display_prediction_results(results):
             label="Tingkat kepercayaan: 95%",
             value=f"Rp {results['lower_ci']:,.2f}", help="batas bawah dengan 95% tingkat kepercayaan berarti 95% kemungkinan harga penutupan sebenarnya tidak akan lebih rendah dari nilai ini"
         )
-        
+
+    st.write("")
+    if results['expected_return'] > 0:
+        st.info("**Sinyal:** 🟢 Harga penutupan lebih rendah hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih tinggi.")
+    else:
+        st.info("**Sinyal:** 🔴 Harga penutupan lebih tinggi hari ini dibandingkan hasil prediksi, potensi return diprediksikan lebih rendah.")
+
     #st.write(f"**Expected Return:** {results['perubahan_persen']:.3f}%")
-    
     #st.divider()
-    st.write(" ")
 
 def choose_plot_range():
     st.write("")
@@ -1144,8 +1094,6 @@ def choose_plot_range():
     return n_days
 
 def info(exog_df):
-    st.write("")
-    st.write("")
     st.subheader(f"ℹ️ Informasi Tambahan")
     st.write("Hasil prediksi di atas merupakan hasil prediksi berdasarkan data harga penutupan historis serta " \
     "data tingkat inflasi dan suku bunga/BI rate.")
@@ -1153,10 +1101,6 @@ def info(exog_df):
     exog_df = exog_df.resample('M').last().sort_index(ascending=False)
     exog_df.index = exog_df.index.strftime('%B %Y')
     st.dataframe(exog_df[['Inflasi', 'BI Rate']])
-
-
-st.write("")
-st.write("")
 
 st.header("Hasil Prediksi")
 st.write("---")
@@ -1193,7 +1137,6 @@ if st.session_state.predicted and st.session_state.prediction_results:
     )
 
     st.write("---")
-    st.write("")
     
     if 'backtest_results' in st.session_state and not st.session_state.backtest_results.empty:
         
@@ -1234,9 +1177,6 @@ if st.session_state.predicted and st.session_state.prediction_results:
         # Plot perbandingan
         plot_comparison(st.session_state.backtest_results)
         st.write("---")
-
         info(combine_exog())
         st.write("---")
         st.info("Prediksi selesai. Pilih mata uang lain untuk dilihat hasil prediksinya atau kunjungi halaman 'Analisis Historis' untuk melihat analisis indikator teknikal.")
-
-            
