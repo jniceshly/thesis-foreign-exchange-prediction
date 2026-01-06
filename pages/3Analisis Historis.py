@@ -231,7 +231,7 @@ st.header("Analisis Historis dengan Indikator Teknikal")
 st.write("")
 st.write("")
 
-currency = st.radio("Pilih satu mata uang yang ingin dilihat analisisnya",["USD/IDR", "EUR/IDR", "GBP/IDR"], horizontal=True)
+currency = st.radio("Pilih Mata Uang untuk Dianalisis",["USD/IDR", "EUR/IDR", "GBP/IDR"], horizontal=True)
 
 if st.session_state.current_currency != currency:
     st.session_state.current_df = None
@@ -522,7 +522,7 @@ if st.session_state.show_analysis:
                         
                         - Fast EMA (Exponential Moving Average) 12 periode
                         - Slow EMA 26 periode
-                        - Signal Line (EMA dari MACD Line) 9 periode")
+                        - Signal Line (EMA dari MACD Line) 9 periode
                         """)
             st.write("")
             with st.expander("📚 Pelajari lebih lanjut tentang MACD"):
@@ -595,6 +595,3 @@ if st.session_state.show_analysis:
                 - Jangan trading hanya berdasarkan RSI saja
                 - Period 14 hari adalah standar, tapi bisa disesuaikan
                 """)
-
-
-            
